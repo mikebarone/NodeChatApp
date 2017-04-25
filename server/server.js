@@ -16,25 +16,21 @@ var io = socketIO(server);
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
-    console.log('New User Connected');
+  console.log('New user connected');
 
-    // Send Message to specific user connected with socket
-    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the Chat'));
+  socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 
-    // Send message to everybody except user connected with socket
-    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User Joined'));
+  socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
-    socket.on('createMessage', (newMessage, callback) => {
-        console.log('New Message Received', newMessage);
+  socket.on('createMessage', (message, callback) => {
+    console.log('createMessage', message);
+    io.emit('newMessage', generateMessage(message.from, message.text));
+    callback('This is from the server.');
+  });
 
-        // Send message to everybody included user connected with socket
-        io.emit('newMessage', generateMessage(newMessage.from, newMessage.text));
-        callback('This is from the server');
-    });
-
-    socket.on('disconnect', () => {
-        console.log('User was Disconnected');
-    });
+  socket.on('disconnect', () => {
+    console.log('User was disconnected');
+  });
 });
 
 server.listen(port, () => {
