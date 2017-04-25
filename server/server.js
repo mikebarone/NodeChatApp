@@ -24,11 +24,12 @@ io.on('connection', (socket) => {
     // Send message to everybody except user connected with socket
     socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User Joined'));
 
-    socket.on('createMessage', (newMessage) => {
+    socket.on('createMessage', (newMessage, callback) => {
         console.log('New Message Received', newMessage);
 
         // Send message to everybody included user connected with socket
         io.emit('newMessage', generateMessage(newMessage.from, newMessage.text));
+        callback('This is from the server');
     });
 
     socket.on('disconnect', () => {
